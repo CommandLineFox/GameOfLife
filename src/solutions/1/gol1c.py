@@ -63,7 +63,7 @@ def slucaj(mat, i, j, n, m, barriers):
         c.value = 1
 
 
-def IgraZivota(mat, n, m):
+def igra_zivota(mat, n, m):
 
     threads = []
 
@@ -78,7 +78,7 @@ def IgraZivota(mat, n, m):
         tr.join()
 
 
-def DodajSusede(mat, n, m):
+def dodaj_susede(mat, n, m):
     for i in range(n):
         for j in range(m):
             if (i == 0 and j == 0) or (i == n-1 and j == 0) or (i == 0 and j == m-1) or (i == n-1 and j == 0):
@@ -93,10 +93,10 @@ def main():
     n = int(input("Enter the number of rows: "))
     m = int(input("Enter the number of columns: "))
     mat = upis_matrice(n, m)
-    DodajSusede(mat, n, m)
+    dodaj_susede(mat, n, m)
 
     ispis_matrice(mat, n, m)
-    IgraZivota(mat, n, m)
+    igra_zivota(mat, n, m)
     ispis_matrice(mat, n, m)
 
 
