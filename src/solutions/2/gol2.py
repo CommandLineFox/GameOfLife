@@ -1,6 +1,9 @@
 from multiprocessing import Process, Queue
 
 
+steps = []
+
+
 class Celija:
     def __init__(self, x, y, value):
         self.x = x
@@ -23,6 +26,25 @@ class Red:
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
+
+
+def animate(steps):
+    ''' Prima niz matrica (svaka matrica je stanje u jednom koraku simulacije)
+    prikazuje razvoj sistema'''
+
+    def init():
+        im.set_data(steps[0])
+        return [im]
+
+    def animate(i):
+        im.set_data(steps[i])
+        return [im]
+
+    im = plt.matshow(steps[0], interpolation='None', animated=True)
+
+    anim = FuncAnimation(im.get_figure(), animate, init_func=init, frames=len(
+        steps), interval=500, blit=True, repeat=False)
+    return anim
 
 
 def upis_matrice(n, m):
@@ -103,8 +125,6 @@ def igra_zivota(mat, n, m, nizredova):
             mat[i][j].value = brojevi[br]
             br += 1
 
-    ispis_matrice(mat, n, m)
-
 
 def dodaj_susede(mat, n, m):
     for i in range(n):
@@ -149,12 +169,32 @@ def popuni_queue_multiprocessing(mat, n, m):
     return nizredova
 
 
+def celija_u_broj(mat, n, m):
+    matn = []
+    for i in range(n):
+        cur = []
+        for j in range(m):
+            c = mat[i][j]
+            cur.append(c.value)
+        matn.append(cur)
+    return matn
+
+
 if __name__ == '__main__':
     n = int(input("Enter the number of rows: "))
     m = int(input("Enter the number of columns: "))
+    k = int(input("Enter the number of steps: "))
+
     mat = upis_matrice(n, m)
     dodaj_susede(mat, n, m)
-    nizredova = popuni_queue_multiprocessing(mat, n, m)
 
-    ispis_matrice(mat, n, m)
-    igra_zivota(mat, n, m, nizredova)
+    nizredova = popuni_queue_multiprocessing(mat, n, m)
+    steps.append(celija_u_broj(mat, n, m))
+    for i in range(k):
+        igra_zivota(mat, n, m, nizredova)
+        mat_display = celija_u_broj(mat, n, m)
+        steps.append(mat_display)
+
+
+anim = animate(steps)
+HTML(anim.to_html5_video())
