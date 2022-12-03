@@ -1,2 +1,2 @@
-# PA_GameOfLife
-Parallel algorithms project 1 from semester 5
+# Parallel algorithms
+Parallel algorithms project 1 and 2 from semester 5 
