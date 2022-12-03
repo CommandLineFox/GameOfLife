@@ -2,7 +2,6 @@ from threading import Lock, Thread
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 from IPython.display import HTML
-import numpy as np
 
 steps = []
 
