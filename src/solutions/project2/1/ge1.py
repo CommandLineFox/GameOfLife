@@ -74,7 +74,9 @@ def reduceVarijansa(data):
 
 
 def fun4(data):
-    tuples = reduceSrednjaVrednost(data)
+    cell, gene, value = data
+    global my_dictionary
+    return cell, gene, (value-my_dictionary[cell])**2
 
 
 def mapstandardnaDevijacija(data):
@@ -84,14 +86,47 @@ def mapstandardnaDevijacija(data):
 
     tiplets = []
     b = groupby(data, key=lambda x: x[0])
-    k, v = b
+
     for k, v in b:
         temp = list(v)
-        d = map(fun4, temp)
+        d = list(map(fun4, temp))
+
+        vrednost = 0
+        brojac = 0
+        for c, g, vr in d:
+            vrednost += vr
+            brojac += 1
+        tuple = (k, math.sqrt(vrednost/brojac))
+        tiplets.append(tuple)
+
+    return tiplets
+
+
+#  ZADATAK   1.5
+
+
+def fun5(data):
+    cell, gene, value = data
+    global my_dictionary
+    global my_dictionary_dev
+    return cell, gene, value-my_dictionary[cell]/my_dictionary_dev[cell]
+
+
+def mapstanvrednosticelije(data):
+    tuples = mapstandardnaDevijacija(data)
+    global my_dictionary_dev
+    my_dictionary_dev = {k: v for k, v in tuples}
+
+    # Poceti od tacke 1.2
+
+    res = map(fun5, data)
+    return list(res)
+
+#  ZADATAK   2.1
 
 
 df = pd.read_table('ekspresije.tsv', index_col=0)
 data = [(cell, gene, value) for cell in df.columns
         for gene, value in df[cell].items()]
 
-print(reduceVarijansa(data))
+print(mapstandardnaDevijacija(data))
