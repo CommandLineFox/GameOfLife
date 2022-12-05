@@ -124,6 +124,7 @@ def fun7(array,x):
     return array
 
 
+
 def standDevGena22(data):
 
     tiplets=[]
