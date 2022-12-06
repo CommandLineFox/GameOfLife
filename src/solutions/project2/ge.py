@@ -100,27 +100,35 @@ def fun6(array, x):
     array.append(array[-1]+(float(x[2])-my_dictionary[x[0]])**2)
     return array
 
+def zamenigencelija(data):
+    cell,gene,value=data
+    return gene,cell,value
+
 
 def varijansagena21(data):
    
     a_sort = sorted(data, key=lambda x: x[1])
 
-    tiplets=[]
-    b = groupby(data, key=lambda x: x[1])
+    b = list(map(zamenigencelija,a_sort))
+    
+    tuples=SrednjaVrednost11(b)
+    global my_dictionary
+    my_dictionary = {k: v for k, v in tuples}  #Postaje   gen vrednost
+    return Varijansa13(CentriranjeEkspresije12(b)) 
 
-    for k, v in b:
-        temp=list(v)
-        d = functools.reduce(fun6, temp, [0.0])
-        tuple=(k,d[-1]/(len(d)-2))
-        tiplets.append(tuple)
+    #for k, v in b:
+    #    temp=list(v)
+    #    d = functools.reduce(fun6, temp, [0.0])
+    #    tuple=(k,d[-1]/(len(d)-2))
+    #    tiplets.append(tuple)
 
-    return a_sort
+    #return a_sort
 
 
 #  ZADATAK   2.2
 
 def fun7(array,x):
-    array.append(array[-1]+float(x[2]))
+    array.append(array[-1]+float(x[1]))
     return array
 
 
@@ -129,10 +137,11 @@ def standDevGena22(data):
 
     tiplets=[]
 
-    b = groupby(data, key=lambda x: x[1])
+    b = groupby(data, key=lambda x: x[0])
     
     for k, v in b:
         temp=list(v)
+        print(temp[0])
         d = functools.reduce(fun7, temp, [0.0])
         tuple=(k,d[-1]/(len(d)-1))
         tiplets.append(tuple)
@@ -150,29 +159,45 @@ def fun8(array,x):
 
     return array
 
-def reducefiltriratiniz(data):
+def filtriratiniz23(data):
     tuples=standDevGena22(data)
     global my_dictionarygene
     my_dictionarygene = {k: v for k, v in tuples}
-    d = functools.reduce(fun7, data, [])
+    d = functools.reduce(fun8, data, [])
 
 
 #  ZADATAK 2.4
 
-
+def sortvrednosti24(data):
+    list1 = sorted(data, key = lambda x: (x[0], -x[2]))
+    return list1
 
 #  ZADATAK 2.5
 
 
-
+def fun10(array,x):
+    cell,gene,value=x
+    tuptup=cell,gene,value,(array[-1])[3]-1
+    array.append(tuptup)
+def ranknormalizacija25(data):
+    tiplets=[]
+    
+    b = groupby(data, key=lambda x: x[1])
+    for k, v in b:
+        temp=list(v)
+        d = functools.reduce(fun10, temp, ["G","C",0,len(temp)+1])
+        d.pop(0)
+        tiplets.append(d)
+    
+    return tiplets
 #  ZADATAK 2.6
 
 def fun9(data):
     celija, gen, originalnavrednost, rankvrednost=data
     return celija, gen, rankvrednost
 
-def izpaciorig(data):
-    res=map(fun8, data)
+def izbaciorig26(data):
+    res=map(fun9, data)
 
 
 
@@ -193,9 +218,11 @@ plt.scatter(
 
 def pozivanje20(data):
     tuples1=SrednjaVrednost11(data)
+    global my_dictionary
     my_dictionary = {k: v for k, v in tuples1}
     data=CentriranjeEkspresije12(data)
     tuples2=standardnaDevijacija14(Varijansa13(data))  
+    global my_dictionary_dev
     my_dictionary_dev = {k: v for k, v in tuples2}
     return standardnavrednost15(data)
 
@@ -237,17 +264,26 @@ elif(ulaz=="2.1"):
     print(varijansagena21(data))                      # da li se koristi za jos nesto?
 elif(ulaz=="2.2"):
     data=pozivanje20(data)
-    print(standDevGena22(data))  
+    print(standDevGena22(varijansagena21(data)))  
 elif(ulaz=="2.3"):
     data=pozivanje20(data)
-    tuples3=standDevGena22(data)
+    tuples3=standDevGena22(varijansagena21(data))
     my_dictionarygene = {k: v for k, v in tuples3}
-    print( data)
+    print(filtriratiniz23(data))
 elif(ulaz=="2.4"):
-   print("usao")  
+    data=pozivanje20(data)
+    tuples3=standDevGena22(varijansagena21(data))
+    my_dictionarygene = {k: v for k, v in tuples3}
+    print(sortvrednosti24(filtriratiniz23(data)))  
 elif(ulaz=="2.5"):
-   print("usao") 
+    data=pozivanje20(data)
+    tuples3=standDevGena22(varijansagena21(data))
+    my_dictionarygene = {k: v for k, v in tuples3}
+    print(ranknormalizacija25(sortvrednosti24(filtriratiniz23(data))))  
 elif(ulaz=="2.6"):
-   print("usao")  
+    data=pozivanje20(data)
+    tuples3=standDevGena22(varijansagena21(data))
+    my_dictionarygene = {k: v for k, v in tuples3}
+    print(izbaciorig26(ranknormalizacija25(sortvrednosti24(filtriratiniz23(data)))))    
 
      
