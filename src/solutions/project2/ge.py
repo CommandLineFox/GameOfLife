@@ -72,7 +72,6 @@ def fun4(data):
 
 
 def standardnaDevijacija14(data):
-
     d = list(map(fun4, data))
     return d
 
@@ -107,14 +106,11 @@ def zamenigencelija(data):
 
 def varijansagena21(data):
 
-    a_sort = sorted(data, key=lambda x: x[1])
-
-    b = list(map(zamenigencelija, a_sort))
-
-    tuples = SrednjaVrednost11(b)
+    tuples = SrednjaVrednost11(data)
     global my_dictionary
-    my_dictionary = {k: v for k, v in tuples}  # Postaje   gen vrednost
-    return Varijansa13(CentriranjeEkspresije12(b))
+    my_dictionary = {k: v for k, v in tuples}  # Postaje gen vrednost
+    return Varijansa13(CentriranjeEkspresije12(data))
+
 
     # for k, v in b:
     #    temp=list(v)
@@ -128,42 +124,31 @@ def varijansagena21(data):
 #  ZADATAK   2.2
 
 def fun7(array, x):
-    array.append(array[-1]+float(x[1]))
+    if(array[0]<500):
+        array[0]+=1
+        array.append(x[0])
     return array
 
-
 def standDevGena22(data):
-
-    tiplets = []
-
-    b = groupby(data, key=lambda x: x[0])
-
-    for k, v in b:
-        temp = list(v)
-        print(temp[0])
-        d = functools.reduce(fun7, temp, [0.0])
-        tuple = (k, d[-1]/(len(d)-1))
-        tiplets.append(tuple)
-
-    return(sorted(tiplets, key=lambda x: x[1])[:500])
+    data=sorted(data, key=lambda x: x[1])
+    d = functools.reduce(fun7, data, [0])
+    d.pop(0)
+    return d
 
 
 #  ZADATAK 2.3
 
 def fun8(array, x):
     global my_dictionarygene
-    if x[1] in my_dictionarygene:
+    if x[0] in my_dictionarygene:
         array.append(x)
 
     return array
 
 
 def filtriratiniz23(data):
-    tuples = standDevGena22(data)
-    global my_dictionarygene
-    my_dictionarygene = {k: v for k, v in tuples}
     d = functools.reduce(fun8, data, [])
-
+    return d
 
 #  ZADATAK 2.4
 
@@ -176,33 +161,36 @@ def sortvrednosti24(data):
 
 def fun10(array, x):
     cell, gene, value = x
-    tuptup = cell, gene, value, (array[-1])[3]-1
+    vrednost=((array[-1])[3])-1
+    tuptup = cell, gene, value, vrednost
     array.append(tuptup)
-
+    return array
 
 def ranknormalizacija25(data):
     tiplets = []
 
-    b = groupby(data, key=lambda x: x[1])
+    b = groupby(data, key=lambda x: x[0])
     for k, v in b:
         temp = list(v)
-        d = functools.reduce(fun10, temp, ["G", "C", 0, len(temp)+1])
+
+        d = functools.reduce(fun10, temp, [("G", "C", 0, len(temp)+1)])
         if d is None:
             continue
         d.pop(0)
-        tiplets.append(d)
+        tiplets+=d
 
     return tiplets
 #  ZADATAK 2.6
 
 
 def fun9(data):
-    celija, gen, originalnavrednost, rankvrednost = data
-    return celija, gen, rankvrednost
+    q, b, c, d = data
+    return q,b,d
 
 
 def izbaciorig26(data):
-    res = map(fun9, data)
+    res = list(map(fun9, data))
+    return res
 
 
 df = pd.read_table('ekspresije.tsv', index_col=0)
@@ -238,7 +226,10 @@ def pozivanje20(data):
     tuples2 = standardnaDevijacija14(Varijansa13(data))
     global my_dictionary_dev
     my_dictionary_dev = {k: v for k, v in tuples2}
-    return standardnavrednost15(data)
+    data=standardnavrednost15(data)
+    a_sort = sorted(data, key=lambda x: x[1])
+    data = list(map(zamenigencelija, a_sort))
+    return data
 
 
 # POZIVI
@@ -275,28 +266,23 @@ elif(ulaz == "1.5"):
 
 elif(ulaz == "2.1"):
     data = pozivanje20(data)
-    # da li se koristi za jos nesto?
     print(varijansagena21(data))
 elif(ulaz == "2.2"):
     data = pozivanje20(data)
     print(standDevGena22(varijansagena21(data)))
 elif(ulaz == "2.3"):
     data = pozivanje20(data)
-    tuples3 = standDevGena22(varijansagena21(data))
-    my_dictionarygene = {k: v for k, v in tuples3}
+    my_dictionarygene = standDevGena22(varijansagena21(data))
     print(filtriratiniz23(data))
 elif(ulaz == "2.4"):
     data = pozivanje20(data)
-    tuples3 = standDevGena22(varijansagena21(data))
-    my_dictionarygene = {k: v for k, v in tuples3}
+    my_dictionarygene = standDevGena22(varijansagena21(data))
     print(sortvrednosti24(filtriratiniz23(data)))
 elif(ulaz == "2.5"):
     data = pozivanje20(data)
-    tuples3 = standDevGena22(varijansagena21(data))
-    my_dictionarygene = {k: v for k, v in tuples3}
+    my_dictionarygene = standDevGena22(varijansagena21(data))
     print(ranknormalizacija25(sortvrednosti24(filtriratiniz23(data))))
 elif(ulaz == "2.6"):
     data = pozivanje20(data)
-    tuples3 = standDevGena22(varijansagena21(data))
-    my_dictionarygene = {k: v for k, v in tuples3}
+    my_dictionarygene = standDevGena22(varijansagena21(data))
     print(izbaciorig26(ranknormalizacija25(sortvrednosti24(filtriratiniz23(data)))))
