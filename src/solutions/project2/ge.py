@@ -111,7 +111,6 @@ def varijansagena21(data):
     my_dictionary = {k: v for k, v in tuples}  # Postaje gen vrednost
     return Varijansa13(CentriranjeEkspresije12(data))
 
-
     # for k, v in b:
     #    temp=list(v)
     #    d = functools.reduce(fun6, temp, [0.0])
@@ -124,13 +123,14 @@ def varijansagena21(data):
 #  ZADATAK   2.2
 
 def fun7(array, x):
-    if(array[0]<500):
-        array[0]+=1
+    if(array[0] < 500):
+        array[0] += 1
         array.append(x[0])
     return array
 
+
 def standDevGena22(data):
-    data=sorted(data, key=lambda x: x[1])
+    data = sorted(data, key=lambda x: x[1])
     d = functools.reduce(fun7, data, [0])
     d.pop(0)
     return d
@@ -152,6 +152,7 @@ def filtriratiniz23(data):
 
 #  ZADATAK 2.4
 
+
 def sortvrednosti24(data):
     list1 = sorted(data, key=lambda x: (x[0], -x[2]))
     return list1
@@ -161,10 +162,11 @@ def sortvrednosti24(data):
 
 def fun10(array, x):
     cell, gene, value = x
-    vrednost=((array[-1])[3])-1
+    vrednost = ((array[-1])[3])-1
     tuptup = cell, gene, value, vrednost
     array.append(tuptup)
     return array
+
 
 def ranknormalizacija25(data):
     tiplets = []
@@ -177,7 +179,7 @@ def ranknormalizacija25(data):
         if d is None:
             continue
         d.pop(0)
-        tiplets+=d
+        tiplets += d
 
     return tiplets
 #  ZADATAK 2.6
@@ -185,12 +187,37 @@ def ranknormalizacija25(data):
 
 def fun9(data):
     q, b, c, d = data
-    return q,b,d
+    return q, b, d
 
 
 def izbaciorig26(data):
     res = list(map(fun9, data))
     return res
+
+
+#  ZADATAK 3.1
+
+def fun11(array, x):
+    cell, gene, value = x
+    tuptup = gene, value
+    array.append(tuptup)
+    return array
+
+
+def grupisicelija31(data):
+    tiplets = []
+
+    data = groupby(data, key=lambda x: x[1])
+    for k, v in data:
+        temp = list(v)
+
+        d = functools.reduce(fun10, temp, [])
+        tipl = k, d
+        tiplets.append(tipl)
+    return tiplets
+
+
+#  ZADATAK 3.2
 
 
 df = pd.read_table('ekspresije.tsv', index_col=0)
@@ -226,7 +253,7 @@ def pozivanje20(data):
     tuples2 = standardnaDevijacija14(Varijansa13(data))
     global my_dictionary_dev
     my_dictionary_dev = {k: v for k, v in tuples2}
-    data=standardnavrednost15(data)
+    data = standardnavrednost15(data)
     a_sort = sorted(data, key=lambda x: x[1])
     data = list(map(zamenigencelija, a_sort))
     return data
@@ -286,3 +313,12 @@ elif(ulaz == "2.6"):
     data = pozivanje20(data)
     my_dictionarygene = standDevGena22(varijansagena21(data))
     print(izbaciorig26(ranknormalizacija25(sortvrednosti24(filtriratiniz23(data)))))
+
+
+# 3 ZADATAK
+
+elif(ulaz == "3.1"):
+    data = pozivanje20(data)
+    my_dictionarygene = standDevGena22(varijansagena21(data))
+    print(grupisicelija31(izbaciorig26(ranknormalizacija25(
+        sortvrednosti24(filtriratiniz23(data))))))
