@@ -320,5 +320,3 @@ elif(ulaz == "3.1"):
     data = pozivanje20(data)
     my_dictionarygene = standDevGena22(varijansagena21(data))
     print(grupisicelija31(izbaciorig26(ranknormalizacija25(sortvrednosti24(filtriratiniz23(data))))))
-elif(ulaz == "fora"):
-    print(0.6+0.7)
