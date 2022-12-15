@@ -198,20 +198,19 @@ def izbaciorig26(data):
 #  ZADATAK 3.1
 
 def fun11(array, x):
-    cell, gene, value = x
+    gene, cell, value = x
     tuptup = gene, value
     array.append(tuptup)
     return array
 
-
 def grupisicelija31(data):
     tiplets = []
 
+    data=sorted(data, key=lambda x: x[1])
     data = groupby(data, key=lambda x: x[1])
     for k, v in data:
         temp = list(v)
-
-        d = functools.reduce(fun10, temp, [])
+        d = functools.reduce(fun11, temp, [])
         tipl = k, d
         tiplets.append(tipl)
     return tiplets
@@ -320,5 +319,6 @@ elif(ulaz == "2.6"):
 elif(ulaz == "3.1"):
     data = pozivanje20(data)
     my_dictionarygene = standDevGena22(varijansagena21(data))
-    print(grupisicelija31(izbaciorig26(ranknormalizacija25(
-        sortvrednosti24(filtriratiniz23(data))))))
+    print(grupisicelija31(izbaciorig26(ranknormalizacija25(sortvrednosti24(filtriratiniz23(data))))))
+elif(ulaz == "fora"):
+    print(0.6+0.7)
