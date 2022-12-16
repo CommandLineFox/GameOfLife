@@ -5,7 +5,6 @@ from itertools import groupby
 import math
 import random
 import csv
-import seaborn as sn
 
 
 #   ZADATAK   1.1
@@ -191,8 +190,7 @@ def grupisi_celije_31(data):
 
 
 #  ZADATAK 3.2
-df = pd.read_table(
-    'C:\\Users\\Korisnik\\Documents\\Projects\\Fakultet\\Paralelni\\src\\solutions\\project2\\ekspresije.tsv', index_col=0)
+df = pd.read_table('ekspresije.tsv', index_col=0)
 data = [(celija, gen, vrednost) for celija in df.columns
         for gen, vrednost in df[celija].items()]
 
@@ -268,7 +266,7 @@ najblizi_centroidi = centroidi
 
 centroidi = list(map(generisi_centroide, centroidi))
 
-for _ in range(15):
+for _ in range(10):
     najblizi_centroidi = list(map(nadji_najblizi_centroid, data))
     najblizi_centroidi.sort(key=lambda x: x[1])
 
@@ -286,7 +284,7 @@ boje = ["red", "blue", "green", "purple", "brown",
 
 flag = True
 embedding = []
-with open('C:\\Users\\Korisnik\\Documents\\Projects\\Fakultet\\Paralelni\\src\\solutions\\project2\\umap.tsv') as file:
+with open('umap.tsv') as file:
     tsv_file = csv.reader(file, delimiter="\t")
     for line in tsv_file:
         if(line[0] == "cell"):
