@@ -1,322 +1,306 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sn
 import functools
 from itertools import groupby
 import math
+import random
+import csv
+import seaborn as sn
 
 
 #   ZADATAK   1.1
+def reduce_srednja_vrednost(niz, x):
+    niz.append(niz[-1]+float(x[2]))
+    return niz
 
 
-def fun1(array, x):
-    array.append(array[-1]+float(x[2]))
-    return array
-
-
-def SrednjaVrednost11(data):
-    tiplets = []
+def srednja_vrednost_11(data):
+    tupleti = []
     b = groupby(data, key=lambda x: x[0])
 
     for k, v in b:
         temp = list(v)
-        d = functools.reduce(fun1, temp, [0.0])
+        d = functools.reduce(reduce_srednja_vrednost, temp, [0.0])
         tuple = (k, d[-1]/(len(d)-1))
-        tiplets.append(tuple)
+        tupleti.append(tuple)
 
-    return tiplets
+    return tupleti
 
 
 #  ZADATAK   1.2
+def map_centriranje_ekspresija(niz):
+    celija, gen, vrednost = niz
+    global vrednosti
+    return celija, gen, round(vrednost-vrednosti[celija], 2)
 
 
-def fun2(array):
-    cell, gene, value = array
-    global my_dictionary
-    return cell, gene, round(value-my_dictionary[cell], 2)
-
-
-def CentriranjeEkspresije12(data):
-    b = map(fun2, data)
+def centriranje_ekspresija_12(data):
+    b = map(map_centriranje_ekspresija, data)
     return list(b)
 
 
 #  ZADATAK   1.3
+def reduce_varijansa(niz, x):
+    niz.append(niz[-1]+(float(x[2])-vrednosti[x[0]])**2)
+    return niz
 
-def fun3(array, x):
-    array.append(array[-1]+(float(x[2])-my_dictionary[x[0]])**2)
-    return array
 
-
-def Varijansa13(data):
-
-    tiplets = []
+def varijansa_13(data):
+    tupleti = []
     b = groupby(data, key=lambda x: x[0])
 
     for k, v in b:
         temp = list(v)
-        d = functools.reduce(fun3, temp, [0.0])
+        d = functools.reduce(reduce_varijansa, temp, [0.0])
         tuple = (k, d[-1]/(len(d)-2))
-        tiplets.append(tuple)
+        tupleti.append(tuple)
 
-    return tiplets
+    return tupleti
 
 
 #  ZADATAK   1.4
-
 # ulaz iz tacke 1.3
-def fun4(data):
-    cell, value = data
-    global my_dictionary
-    return cell, math.sqrt(value)
+def map_standardna_devijacija(data):
+    celija, vrednost = data
+    global vrednosti
+    return celija, math.sqrt(vrednost)
 
 
-def standardnaDevijacija14(data):
-    d = list(map(fun4, data))
+def standardna_devijacija_14(data):
+    d = list(map(map_standardna_devijacija, data))
     return d
 
 
 #  ZADATAK   1.5
+def map_standardna_vrednost(data):
+    celija, gen, vrednost = data
+    global vrednosti
+    global vrednosti_dev
+    return celija, gen, (vrednost-vrednosti[celija])/vrednosti_dev[celija]
 
 
-def fun5(data):
-    cell, gene, value = data
-    global my_dictionary
-    global my_dictionary_dev
-    return cell, gene, (value-my_dictionary[cell])/my_dictionary_dev[cell]
-
-
-def standardnavrednost15(data):
-    res = map(fun5, data)
-    return list(res)
+def standardna_vrednost_15(data):
+    rezultat = map(map_standardna_vrednost, data)
+    return list(rezultat)
 
 
 #  ZADATAK   2.1
+def zameni_gen_celija(data):
+    celija, gen, vrednost = data
+    return gen, celija, vrednost
 
 
-def fun6(array, x):
-    array.append(array[-1]+(float(x[2])-my_dictionary[x[0]])**2)
-    return array
-
-
-def zamenigencelija(data):
-    cell, gene, value = data
-    return gene, cell, value
-
-
-def varijansagena21(data):
-
-    tuples = SrednjaVrednost11(data)
-    global my_dictionary
-    my_dictionary = {k: v for k, v in tuples}  # Postaje gen vrednost
-    return Varijansa13(CentriranjeEkspresije12(data))
-
-    # for k, v in b:
-    #    temp=list(v)
-    #    d = functools.reduce(fun6, temp, [0.0])
-    #    tuple=(k,d[-1]/(len(d)-2))
-    #    tiplets.append(tuple)
-
-    # return a_sort
+def varijansa_gena_21(data):
+    tuples = srednja_vrednost_11(data)
+    global vrednosti
+    vrednosti = {k: v for k, v in tuples}  # Postaje gen vrednost
+    return varijansa_13(centriranje_ekspresija_12(data))
 
 
 #  ZADATAK   2.2
+def reduce_standardna_devijacija_gena(niz, x):
+    if(niz[0] < 500):
+        niz[0] += 1
+        niz.append(x[0])
+    return niz
 
-def fun7(array, x):
-    if(array[0] < 500):
-        array[0] += 1
-        array.append(x[0])
-    return array
 
-
-def standDevGena22(data):
+def standardna_devijacija_gena_22(data):
     data = sorted(data, key=lambda x: x[1])
-    d = functools.reduce(fun7, data, [0])
+    d = functools.reduce(reduce_standardna_devijacija_gena, data, [0])
     d.pop(0)
     return d
 
 
 #  ZADATAK 2.3
+def reduce_filtriranje_niza(niz, x):
+    global vrednosti_geni
+    if x[0] in vrednosti_geni:
+        niz.append(x)
 
-def fun8(array, x):
-    global my_dictionarygene
-    if x[0] in my_dictionarygene:
-        array.append(x)
-
-    return array
+    return niz
 
 
-def filtriratiniz23(data):
-    d = functools.reduce(fun8, data, [])
+def filtriranje_niza_23(data):
+    d = functools.reduce(reduce_filtriranje_niza, data, [])
     return d
 
+
 #  ZADATAK 2.4
-
-
-def sortvrednosti24(data):
+def sortiranje_vrednosti_24(data):
     list1 = sorted(data, key=lambda x: (x[0], -x[2]))
     return list1
 
+
 #  ZADATAK 2.5
+def reduce_normalizacija(niz, x):
+    celija, gen, original = x
+    vrednost = ((niz[-1])[3])-1
+    tuptup = celija, gen, original, vrednost
+    niz.append(tuptup)
+    return niz
 
 
-def fun10(array, x):
-    cell, gene, value = x
-    vrednost = ((array[-1])[3])-1
-    tuptup = cell, gene, value, vrednost
-    array.append(tuptup)
-    return array
-
-
-def ranknormalizacija25(data):
-    tiplets = []
+def rank_normalizacija_25(data):
+    tupleti = []
 
     b = groupby(data, key=lambda x: x[0])
     for k, v in b:
         temp = list(v)
 
-        d = functools.reduce(fun10, temp, [("G", "C", 0, len(temp)+1)])
+        d = functools.reduce(reduce_normalizacija, temp, [
+                             ("G", "C", 0, len(temp)+1)])
         if d is None:
             continue
         d.pop(0)
-        tiplets += d
+        tupleti += d
 
-    return tiplets
+    return tupleti
+
+
 #  ZADATAK 2.6
-
-
-def fun9(data):
-    q, b, c, d = data
+def map_izbaci_original(data):
+    q, b, _, d = data
     return q, b, d
 
 
-def izbaciorig26(data):
-    res = list(map(fun9, data))
-    return res
+def izbaci_original_26(data):
+    rezultat = list(map(map_izbaci_original, data))
+    return rezultat
 
 
 #  ZADATAK 3.1
 
-def fun11(array, x):
-    gene, cell, value = x
-    tuptup = gene, value
-    array.append(tuptup)
-    return array
+def reduce_grupisi_celije(niz, x):
+    _, _, vrednost = x
+    niz.append(vrednost)
+    return niz
 
-def grupisicelija31(data):
-    tiplets = []
 
-    data=sorted(data, key=lambda x: x[1])
+def grupisi_celije_31(data):
+    tupleti = []
+
+    data = sorted(data, key=lambda x: (x[1], x[0]))
     data = groupby(data, key=lambda x: x[1])
     for k, v in data:
         temp = list(v)
-        d = functools.reduce(fun11, temp, [])
-        tipl = k, d
-        tiplets.append(tipl)
-    return tiplets
+        d = functools.reduce(reduce_grupisi_celije, temp, [])
+        tupl = k, d
+        tupleti.append(tupl)
+    return tupleti
 
 
 #  ZADATAK 3.2
-
-
-df = pd.read_table('ekspresije.tsv', index_col=0)
-data = [(cell, gene, value) for cell in df.columns
-        for gene, value in df[cell].items()]
-
-embedding = pd.read_table('umap.tsv')
-embedding['cluster'] = 0
-palette = [(0.12156862745098039, 0.4666666666666667, 0.7058823529411765),
-           (1.0, 0.4980392156862745, 0.054901960784313725),
-           (0.17254901960784313, 0.6274509803921569, 0.17254901960784313),
-           (0.8392156862745098, 0.15294117647058825, 0.1568627450980392),
-           (0.5803921568627451, 0.403921568627451, 0.7411764705882353),
-           (0.5490196078431373, 0.33725490196078434, 0.29411764705882354),
-           (0.8901960784313725, 0.4666666666666667, 0.7607843137254902),
-           (0.4980392156862745, 0.4980392156862745, 0.4980392156862745),
-           (0.7372549019607844, 0.7411764705882353, 0.13333333333333333),
-           (0.09019607843137255, 0.7450980392156863, 0.8117647058823529)]
-
-plt.figure(figsize=(8, 6))
-plt.scatter(
-    embedding.umap1,
-    embedding.umap2,
-    c=list(palette[x] for x in embedding.cluster)
-)
+df = pd.read_table(
+    'C:\\Users\\Korisnik\\Documents\\Projects\\Fakultet\\Paralelni\\src\\solutions\\project2\\ekspresije.tsv', index_col=0)
+data = [(celija, gen, vrednost) for celija in df.columns
+        for gen, vrednost in df[celija].items()]
 
 
 def pozivanje20(data):
-    tuples1 = SrednjaVrednost11(data)
-    global my_dictionary
-    my_dictionary = {k: v for k, v in tuples1}
-    data = CentriranjeEkspresije12(data)
-    tuples2 = standardnaDevijacija14(Varijansa13(data))
-    global my_dictionary_dev
-    my_dictionary_dev = {k: v for k, v in tuples2}
-    data = standardnavrednost15(data)
+    tuples1 = srednja_vrednost_11(data)
+    global vrednosti
+    vrednosti = {k: v for k, v in tuples1}
+    data = centriranje_ekspresija_12(data)
+    tuples2 = standardna_devijacija_14(varijansa_13(data))
+    global vrednosti_dev
+    vrednosti_dev = {k: v for k, v in tuples2}
+    data = standardna_vrednost_15(data)
     a_sort = sorted(data, key=lambda x: x[1])
-    data = list(map(zamenigencelija, a_sort))
+    data = list(map(zameni_gen_celija, a_sort))
     return data
 
 
-# POZIVI
-# 1 ZADATAK
-ulaz = input()
-global my_dictionary
-global my_dictionary_dev
-global my_dictionarygene
+global vrednosti
+global vrednosti_dev
+global vrednosti_geni
 
-if(ulaz == "1.1"):
-    print(SrednjaVrednost11(data))
-elif(ulaz == "1.2"):
-    tuples = SrednjaVrednost11(data)
-    my_dictionary = {k: v for k, v in tuples}
-    print(CentriranjeEkspresije12(data))  # Mozda treba apsolutna od rezultata
-elif(ulaz == "1.3"):
-    tuples = SrednjaVrednost11(data)
-    my_dictionary = {k: v for k, v in tuples}
-    print(Varijansa13(CentriranjeEkspresije12(data)))
-elif(ulaz == "1.4"):
-    tuples = SrednjaVrednost11(data)
-    my_dictionary = {k: v for k, v in tuples}
-    print(standardnaDevijacija14(Varijansa13(data)))
-elif(ulaz == "1.5"):
-    tuples1 = SrednjaVrednost11(data)
-    my_dictionary = {k: v for k, v in tuples1}
-    data = CentriranjeEkspresije12(data)
-    tuples2 = standardnaDevijacija14(Varijansa13(data))
-    my_dictionary_dev = {k: v for k, v in tuples2}
-    print(standardnavrednost15(data))
+data = pozivanje20(data)
+vrednosti_geni = standardna_devijacija_gena_22(varijansa_gena_21(data))
+
+data = filtriranje_niza_23(data)
+data = sortiranje_vrednosti_24(data)
+data = rank_normalizacija_25(data)
+data = izbaci_original_26(data)
+data = grupisi_celije_31(data)
 
 
-# 2 ZADATAK
-
-elif(ulaz == "2.1"):
-    data = pozivanje20(data)
-    print(varijansagena21(data))
-elif(ulaz == "2.2"):
-    data = pozivanje20(data)
-    print(standDevGena22(varijansagena21(data)))
-elif(ulaz == "2.3"):
-    data = pozivanje20(data)
-    my_dictionarygene = standDevGena22(varijansagena21(data))
-    print(filtriratiniz23(data))
-elif(ulaz == "2.4"):
-    data = pozivanje20(data)
-    my_dictionarygene = standDevGena22(varijansagena21(data))
-    print(sortvrednosti24(filtriratiniz23(data)))
-elif(ulaz == "2.5"):
-    data = pozivanje20(data)
-    my_dictionarygene = standDevGena22(varijansagena21(data))
-    print(ranknormalizacija25(sortvrednosti24(filtriratiniz23(data))))
-elif(ulaz == "2.6"):
-    data = pozivanje20(data)
-    my_dictionarygene = standDevGena22(varijansagena21(data))
-    print(izbaciorig26(ranknormalizacija25(sortvrednosti24(filtriratiniz23(data)))))
+#  ZADATAK 3.2
+prvacelija, prvevrednosti = data[0]
+dimenzije = len(prvevrednosti)
+klasteri = 10
 
 
-# 3 ZADATAK
+def generisi_centroide(centroidi):
+    centroidi = [random.randint(5, 100) for _ in range(dimenzije)]
+    return centroidi
 
-elif(ulaz == "3.1"):
-    data = pozivanje20(data)
-    my_dictionarygene = standDevGena22(varijansagena21(data))
-    print(grupisicelija31(izbaciorig26(ranknormalizacija25(sortvrednosti24(filtriratiniz23(data))))))
+
+def nadji_najblizi_centroid(data):
+    celija, vrednosti = data
+    rezultat = (celija, 0, 1000000)
+    for x in range(klasteri):
+        sum = 0
+        for vrednost, centroid in zip(vrednosti, centroidi[x]):
+            sum = sum + (centroid - vrednost)*(centroid - vrednost)
+        if(math.sqrt(sum) < rezultat[2]):
+            rezultat = celija, x, math.sqrt(sum)
+    return rezultat[0], rezultat[1], vrednosti
+
+
+def pomeri_centroid(niz, vrednost):
+    if(niz[-1] == vrednost[1]):
+        niz[-2] += 1
+        for i in range(len(niz[niz[-1]])):
+            niz[niz[-1]][i] += vrednost[2][i]
+    else:
+        niz[niz[-1]] = list(map(lambda x: x/niz[-2], niz[niz[-1]]))
+        niz[-1] += 1
+        niz[-2] = 1
+        for i in range(len(niz[niz[-1]])):
+            niz[niz[-1]][i] += vrednost[2][i]
+    return niz
+
+
+centroidi = []
+centroidi.extend([] for _ in range(klasteri))
+najblizi_centroidi = centroidi
+
+centroidi = list(map(generisi_centroide, centroidi))
+
+for _ in range(15):
+    najblizi_centroidi = list(map(nadji_najblizi_centroid, data))
+    najblizi_centroidi.sort(key=lambda x: x[1])
+
+    centroidi.append(1)  # type: ignore
+    centroidi.append(0)  # type: ignore
+    centroidi = functools.reduce(
+        pomeri_centroid, najblizi_centroidi, centroidi)  # type: ignore
+    centroidi[centroidi[-1]
+              ] = list(map(lambda x: x/centroidi[-2], centroidi[centroidi[-1]]))  # type: ignore
+    centroidi.pop(-1)
+    centroidi.pop(-1)
+
+boje = ["red", "blue", "green", "purple", "brown",
+        "black", "yellow", "orange", "pink", "grey"]
+
+flag = True
+embedding = []
+with open('C:\\Users\\Korisnik\\Documents\\Projects\\Fakultet\\Paralelni\\src\\solutions\\project2\\umap.tsv') as file:
+    tsv_file = csv.reader(file, delimiter="\t")
+    for line in tsv_file:
+        if(line[0] == "cell"):
+            continue
+        embedding.append([line[0], float(line[1]), float(line[2])])
+embedding.pop(0)
+
+mapa_centroida = dict((x[0], x[1]) for x in najblizi_centroidi)
+
+c = ["red", "blue", "green", "purple", "brown",
+     "black", "yellow", "orange", "pink", "grey"]
+
+for x in range(len(embedding)):
+    plt.scatter(
+        embedding[x][1],
+        embedding[x][2],
+        c=c[mapa_centroida[embedding[x][0]]])
