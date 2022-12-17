@@ -279,10 +279,6 @@ for _ in range(10):
     centroidi.pop(-1)
     centroidi.pop(-1)
 
-boje = ["red", "blue", "green", "purple", "brown",
-        "black", "yellow", "orange", "pink", "grey"]
-
-flag = True
 embedding = []
 with open('umap.tsv') as file:
     tsv_file = csv.reader(file, delimiter="\t")
